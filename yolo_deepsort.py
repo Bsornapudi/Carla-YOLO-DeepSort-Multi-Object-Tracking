@@ -15,7 +15,7 @@ from deep_sort.deep_sort import DeepSort
 from deep_sort.utils.parser import get_config
 #from PIL import Image, ImageDraw, ImageFont
 
-YOLO_PATH = 'yolov8x.pt'
+YOLO_PATH = 'weights/yolov8n.pt'
 CLASS_IDS = [ 2, 5, 7]
 CLASS_NAMES = { 2: 'car', 5: 'bus' ,7: 'truck'}
 
