@@ -5,15 +5,15 @@ import numpy as np
 import cv2
 from time import perf_counter
 from ultralytics import YOLO
-import yaml
+#import yaml
 from pathlib import Path
 from types import SimpleNamespace
 import carla
 import random
-import os
+#import os
 from deep_sort.deep_sort import DeepSort
 from deep_sort.utils.parser import get_config
-from PIL import Image, ImageDraw, ImageFont
+#from PIL import Image, ImageDraw, ImageFont
 
 YOLO_PATH = 'yolov8x.pt'
 CLASS_IDS = [ 2, 5, 7]
