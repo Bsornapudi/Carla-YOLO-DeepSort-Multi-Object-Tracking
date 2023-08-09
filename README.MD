@@ -26,4 +26,11 @@ Following software are required before installing required packages
     ```
     python track.ipynb
     ```
+NOTE : 
+
+step to check PyTorch compatibility and install an appropriate version based on their CUDA and cuDNN configurations from this link , scroll down and you will see an option to select your system configs and tis will generate PIP INSTALL for CUDnn+torch which is compatable 
+https://pytorch.org/
+
+Eg : pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
+    
        
