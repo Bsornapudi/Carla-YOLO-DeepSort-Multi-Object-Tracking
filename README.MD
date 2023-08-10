@@ -23,10 +23,8 @@ Following software are required before installing required packages
     ```
 8. Once the setup is done Run Calra.exe file to launch simulator
 9. One commapnd prompt or launch jupyter from conda prompt
-10. If using CLI or run track.ipynb file in jupyter 
-    ```
-    python track.ipynb
-    ```
+10. Run track.ipynb file in jupyter 
+ 
 NOTE : 
 
 step to check PyTorch compatibility and install an appropriate version based on their CUDA and cuDNN configurations from this link , scroll down and you will see an option to select your system configs and tis will generate PIP INSTALL for CUDnn+torch which is compatable 
