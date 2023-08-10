@@ -21,6 +21,7 @@ palette = (2 ** 11 - 1, 2 ** 15 - 1, 2 ** 20 - 1)
 output_path = "output.mp4"
 
 class main:
+    
     def __init__(self):
         
         self.model = self.load_model()
@@ -42,6 +43,18 @@ class main:
     def load_model(self):
         model = YOLO('weights/yolov8n.pt')
         return model
+
+    def yolo_details(self, frame):
+        results = self.model(frame)
+        bbox_xyxy = []
+        conf_score = []
+        cls_id = []          
+        for box in results:
+            rows = [row for row in box.boxes.data.tolist() if int(row[5]) in class_id and row[5] != 0]
+            bbox_xyxy.extend([[int(x1), int(y1), int(x2), int(y2)] for x1, y1, x2, y2, conf, id in rows])
+            conf_score.extend([conf for x1, y1, x2, y2, conf, id in rows])
+            cls_id.extend([int(id) for x1, y1, x2, y2, conf, id in rows])
+        return frame , bbox_xyxy , conf_score , cls_id    
 
     def video(self,frame,path,fps,frame_width , frame_height):
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
@@ -108,24 +121,12 @@ class main:
         
         ego_vehicle.set_autopilot(True)
         v_frame=[]
-        
+
         try:
             while True:
                 print('in while loop')
                 frame = camera_data['image']
-                results = self.model(frame)
-            
-                bbox_xyxy = []
-                conf_score = []
-                cls_id = []
-                outputs = []
-            
-                for box in results:
-                    rows = [row for row in box.boxes.data.tolist() if int(row[5]) in class_id and row[5] != 0]
-                    bbox_xyxy.extend([[int(x1), int(y1), int(x2), int(y2)] for x1, y1, x2, y2, conf, id in rows])
-                    conf_score.extend([conf for x1, y1, x2, y2, conf, id in rows])
-                    cls_id.extend([int(id) for x1, y1, x2, y2, conf, id in rows])
-                
+                frame , bbox_xyxy , conf_score , cls_id = self.yolo_details(frame)              
                 outputs = self.deepsort.update(bbox_xyxy, conf_score, frame)
                 print('deepsort output', outputs)
 
