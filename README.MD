@@ -1,6 +1,7 @@
 # Multi Vehicle tracking in carla simulator 
 
 This repo host a comprehensive solution for multi-object tracking in combination with YOLO and DeepSORT in carla simulator .
+YOLOV8 model is trained on Carla dataset , which is avaiable in kaggle (https://www.kaggle.com/datasets/alechantson/carladataset)
 
 Following software are required before installing required packages
 
