@@ -3,6 +3,8 @@
 This repo host a comprehensive solution for multi-object tracking in combination with YOLO and DeepSORT in carla simulator .
 YOLOV8 model is trained on Carla dataset , which is avaiable in kaggle (https://www.kaggle.com/datasets/alechantson/carladataset)
 
+![ezgif com-optimize](https://github.com/Bsornapudi/Carla-YOLO-DeepSort-Multi-Object-Tracking/assets/48683074/c365a981-e314-4cae-b4aa-d234b3de5cfa)
+
 Following software are required before installing required packages
 
 1. Carla simulator : Download Carla simulator and follow the instuction guide - https://carla.readthedocs.io/en/latest/start_quickstart/
