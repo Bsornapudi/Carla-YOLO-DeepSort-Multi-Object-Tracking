@@ -12,8 +12,8 @@ from deep_sort.deep_sort import DeepSort
 from deep_sort.utils.parser import get_config
 
 
-class_id = [ 2, 5, 7]
-class_name = { 2: 'car', 5: 'bus' ,7: 'truck'}
+class_id = [ 2, 3, 5, 7]
+class_name = { 2: 'car', 3: 'motobike', 5: 'bus' ,7: 'truck'}
 
 img_w = 256*4
 img_h = 256*3
@@ -21,6 +21,7 @@ palette = (2 ** 11 - 1, 2 ** 15 - 1, 2 ** 20 - 1)
 output_path = "output.mp4"
 
 class main:
+
     def __init__(self):
         
         self.model = self.load_model()
@@ -40,9 +41,27 @@ class main:
         )
         
     def load_model(self):
-        
         model = YOLO('weights/yolov8n.pt')
         return model
+
+    def yolo_details(self, frame):
+        results = self.model(frame)
+        bbox_xyxy = []
+        conf_score = []
+        cls_id = []          
+        for box in results:
+            rows = [row for row in box.boxes.data.tolist() if int(row[5]) in class_id and row[5] != 0]
+            bbox_xyxy.extend([[int(x1), int(y1), int(x2), int(y2)] for x1, y1, x2, y2, conf, id in rows])
+            conf_score.extend([conf for x1, y1, x2, y2, conf, id in rows])
+            cls_id.extend([int(id) for x1, y1, x2, y2, conf, id in rows])
+        return frame , bbox_xyxy , conf_score , cls_id    
+
+    def video(self,frame,path,fps,frame_width , frame_height):
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        video_writer = cv2.VideoWriter(output_path,fourcc,fps,(frame_width,frame_height)) 
+        for f in frame:
+            video_writer.write(f)
+          
     
     def __call__(self):
         # The local Host for carla simulator is 2000
@@ -70,7 +89,7 @@ class main:
         transform = carla.Transform(ego_vehicle.get_transform().transform(carla.Location(x=-4, z=2.5)), carla.Rotation(yaw=-180, pitch=-90))
         spectator.set_transform(transform)
 
-        for i in range(45):
+        for i in range(90):
             vehicle_bp = random.choice(world.get_blueprint_library().filter('vehicle'))
             npc = world.try_spawn_actor(vehicle_bp, random.choice(spawn_points))
             
@@ -100,72 +119,41 @@ class main:
         camera_data = {'image': np.zeros((image_h, image_w, 4))}
         camera.listen(lambda image: camera_data.update({'image': capture_image(image)}))
         
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        video_writer = cv2.VideoWriter(self.output_path, fourcc, 13.0, (img_w, img_h))
-        
         ego_vehicle.set_autopilot(True)
+        v_frame=[]
 
-        while True:
-            print('in while loop')
-            frame = camera_data['image']
-            results = self.model(frame)
-        
-            bbox_xyxy = []
-            conf_score = []
-            cls_id = []
-            outputs = []
-            '''
-            for box in results:  
-                for row in box.boxes.data.tolist():
-                    x1, y1, x2, y2, conf, id = row
-                    
-                    if int(id) in class_id and id != 0 :
-                        bbox_xyxy.append([int(x1), int(y1), int(x2), int(y2)])
-                        conf_score.append(conf)
-                        cls_id.append(int(id))
-                    else:
-                            continue        
+        try:
+            while True:
+                print('in while loop')
+                frame = camera_data['image']
+                frame , bbox_xyxy , conf_score , cls_id = self.yolo_details(frame)              
                 outputs = self.deepsort.update(bbox_xyxy, conf_score, frame)
-                print('deepsort output' , outputs)
-            '''
-            for box in results:
-                rows = [row for row in box.boxes.data.tolist() if int(row[5]) in class_id and row[5] != 0]
-                bbox_xyxy.extend([[int(x1), int(y1), int(x2), int(y2)] for x1, y1, x2, y2, conf, id in rows])
-                conf_score.extend([conf for x1, y1, x2, y2, conf, id in rows])
-                cls_id.extend([int(id) for x1, y1, x2, y2, conf, id in rows])
-            
-            outputs = self.deepsort.update(bbox_xyxy, conf_score, frame)
-            print('deepsort output', outputs)
+                print('deepsort output', outputs)
 
-            frame = np.array(frame)
-            if len(outputs) > 0:
-                for j, (output, conf , tracked_clas_id) in enumerate(zip(outputs, conf_score , cls_id)):
-                    frame = self.draw_bbox(frame, output, conf, tracked_clas_id)
-
-            frame = np.array(frame)
-            if len(outputs) > 0:
-                for j, (output, conf , tracked_cls_id) in enumerate(zip(outputs, conf_score,cls_id)):
-                        frame = self.draw_bbox(frame, output, conf, tracked_cls_id)
-  
-            frame = cv2.UMat(frame)
-            cv2.imshow('deepSORT', frame)
-            
-            if self.save_vid:
-                video_writer.write(frame)
-                
-            if cv2.waitKey(1) == ord('q'):
-                break
-            
-        
+                frame = np.array(frame)
+                if len(outputs) > 0:
+                    for j, (output, conf , tracked_cls_id) in enumerate(zip(outputs, conf_score,cls_id)):
+                            frame = self.draw_bbox(frame, output, conf, tracked_cls_id)
+    
+                frame = cv2.UMat(frame)
+                cv2.imshow('deepSORT', frame)
+                v_frame.append(frame)
+                self.video(v_frame , self.output_path  , 20.0 , img_w , img_h)
+                   
+                if cv2.waitKey(1) == ord('q'):
+                    break 
+        finally:
+            self.destroy_world(camera, ego_vehicle, world)
+            print('all actors destroyed')
+     
+    def destroy_world(self,camera , vehicle ,world):
         cv2.destroyAllWindows()
         camera.stop()
         camera.destroy()
-        ego_vehicle.destroy()
-        for npc in world.get_actors().filter('*vehicle*'):
+        vehicle.destroy()
+        for npc in world.get_actors().filter('vehicle*'):
             if npc:
-                npc.destory()
-                
-        
+                npc.destroy()
 
     def colour_label(self , label):
 

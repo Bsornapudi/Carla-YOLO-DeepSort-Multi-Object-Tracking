@@ -21,7 +21,7 @@ palette = (2 ** 11 - 1, 2 ** 15 - 1, 2 ** 20 - 1)
 output_path = "output.mp4"
 
 class main:
-    
+
     def __init__(self):
         
         self.model = self.load_model()
@@ -89,7 +89,7 @@ class main:
         transform = carla.Transform(ego_vehicle.get_transform().transform(carla.Location(x=-4, z=2.5)), carla.Rotation(yaw=-180, pitch=-90))
         spectator.set_transform(transform)
 
-        for i in range(50):
+        for i in range(90):
             vehicle_bp = random.choice(world.get_blueprint_library().filter('vehicle'))
             npc = world.try_spawn_actor(vehicle_bp, random.choice(spawn_points))
             
@@ -138,10 +138,8 @@ class main:
                 frame = cv2.UMat(frame)
                 cv2.imshow('deepSORT', frame)
                 v_frame.append(frame)
-                
-                #if self.save_vid:
                 self.video(v_frame , self.output_path  , 20.0 , img_w , img_h)
-                    
+                   
                 if cv2.waitKey(1) == ord('q'):
                     break 
         finally:
