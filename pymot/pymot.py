@@ -450,7 +450,8 @@ class MOTEvaluation:
             write_stderr_red("Warning", "No ground truth. MOTA calculation not possible")
 #            raise("No ground truth. MOTA calculation not possible")
         else:
-            mota = 1.0 - float(self.misses_ + self.false_positives_ + self.mismatches_) / float(self.total_groundtruths_)
+            #mota = 1.0 - float(self.misses_ + self.false_positives_ + self.mismatches_) / float(self.total_groundtruths_)
+            mota = 1.0 - (self.misses_ + self.false_positives_ + self.mismatches_) / self.total_groundtruths_
             print("get mota" , mota)
         return mota
 
@@ -602,7 +603,7 @@ if __name__ == "__main__":
 
     # Load ground truth according to format
     # Assume MOT format, if non-json
-    gt = open(args.groundtruth) # gt file
+    gt = open(args.groundtruth , 'r') # gt file
     if args.groundtruth.endswith(".json"):
         groundtruth = json.load(gt)[0]
     else:
