@@ -17,7 +17,7 @@ class MOTEvaluation:
 
     def __init__(self, groundtruth, hypotheses, overlap_threshold):
         """Constructor """
-        
+        print("in init of pymot")
         self.overlap_threshold_ = overlap_threshold
         """Bounding box overlap threshold"""
     
@@ -28,6 +28,8 @@ class MOTEvaluation:
         """Maximum offset considered for a match of hypothesis and ground truth"""
 
         self.groundtruth_ = groundtruth
+
+        
         """Groundtruth. See groundtruth.json for a sample file"""
         
         if self.groundtruth_["class"] != "video":
@@ -35,6 +37,8 @@ class MOTEvaluation:
             raise Exception("Ground truth is not of class \"video\"")
         
         self.hypotheses_ = hypotheses
+       
+        
         """Hypotheses. See hypotheses.json for a sample file"""
         
         if self.hypotheses_["class"] != "video":
@@ -48,36 +52,42 @@ class MOTEvaluation:
         # Set class and type for hypos and ground truths
         for f in self.hypotheses_["frames"]:
             for h in f["hypotheses"]:
+                #print("individual hypo frames" , h)
                 h["type"] = "hypothesis"
                 h["class"] = "unevaluated"
+                
 
         for f in self.groundtruth_["frames"]:
             for g in f["annotations"]:
+                #print("indivdual gt frames" , g)
                 g["type"] = "groundtruth"
                 g["class"] = "unevaluated"
             
         # List of dicts, containing ground truths and hypotheses for visual debugging
+        
         self.visualDebugFrames_ = []
+        print("done with init")
 
 
     def get_hypotheses_frame(self, timestamp):
         """Get list of hypotheses occuring chronologically close to ground truth timestamp, but at most with time difference self.sync_delta"""
-        
+    
         # Helper function for filter()
         def hypothesis_frame_chronologically_close(hypothesis):
-            return abs(hypothesis["timestamp"] - timestamp) < self.sync_delta_
+                        return abs(hypothesis["timestamp"] - timestamp) < self.sync_delta_
 
         # Hypotheses frames which are chronologically close to timestamp 
         # Use binary search, if this is to slow for you :)P
-        hypotheses_frames = filter(hypothesis_frame_chronologically_close, self.hypotheses_["frames"])
         
+        hypotheses_frames = filter(hypothesis_frame_chronologically_close, self.hypotheses_["frames"])
+        # for x in hypotheses_frames:
+            # print(" hypotheses_frames ",x,len(list(hypotheses_frames)))
         # We expect at most one hypotheses timestamp.
         if len(list(hypotheses_frames)) > 1:
-        #if len(hypotheses_frames) > 1:
             #raise Exception, "> 1 hypotheses timestamps found for timestamp %f with sync delta %f" % (timestamp, self.sync_delta_)
             raise Exception("> 1 hypotheses timestamps found for timestamp %f with sync delta %f" % (timestamp, self.sync_delta_))
+
         if len(list(hypotheses_frames)) == 0:
-        #if len(hypotheses_frames) == 0:
 #            write_stderr_red("Warning:", "No hypothesis timestamp found for timestamp %f with sync delta %f" % (timestamp, self.sync_delta_))
             return {"hypotheses": []} # empty list of hypos
         
@@ -86,7 +96,7 @@ class MOTEvaluation:
 
     def evaluate(self):
         """Compute MOTA metric from ground truth and hypotheses for all frames."""
-        
+        # print("in evaluate")
         frames = self.groundtruth_["frames"]
         for frame in frames:
             self.evaluateFrame(frame)
@@ -94,9 +104,10 @@ class MOTEvaluation:
 
     def evaluateFrame(self, frame):
         """Update statistics by evaluating a new frame."""
-
+        # print("in evaluate frame")
         timestamp = frame["timestamp"]
         groundtruths = frame["annotations"]
+        
         hypotheses = self.get_hypotheses_frame(timestamp)["hypotheses"]
 
         visualDebugAnnotations = []
@@ -127,6 +138,7 @@ class MOTEvaluation:
 
         LOG.info("GTs:")
         for groundtruth in groundtruths:
+            # print("rect",Rect(groundtruth))
             LOG.info(Rect(groundtruth))
 
         LOG.info("Hypos:")
@@ -143,8 +155,11 @@ class MOTEvaluation:
         LOG.info("")
         LOG.info("STEP 1: KEEP CORRESPONDENCE")
 #            print "DIFF Keep correspondence"
+        print("hello 2")
+        print(list(self.mappings_.keys()))
             
         for gt_id in self.mappings_.keys():
+            print("hello 1")
             groundtruth = filter(lambda g: g["id"] == gt_id, groundtruths) # Get ground truths with given ground truth id in current frame
             if len(groundtruth) > 1:
                 LOG.warning("found %d > 1 ground truth tracks for id %s", len(groundtruth), gt_id)
@@ -159,6 +174,7 @@ class MOTEvaluation:
             # Hypothesis found for known mapping
             # Check hypothesis for overlap
             overlap = Rect(groundtruth[0]).overlap(Rect(hypothesis[0]))
+            print("",overlap)
             if overlap >= self.overlap_threshold_:
                 LOG.info("Keeping correspondence between %s and %s" % (groundtruth[0]["id"], hypothesis[0]["id"]))
 #                    print "DIFF Keep corr %s %s %.2f" % (groundtruth[0]["id"], hypothesis[0]["id"], Rect(groundtruth[0]).overlap(Rect(hypothesis[0])))
@@ -198,7 +214,7 @@ class MOTEvaluation:
                 rect_groundtruth = Rect(groundtruth)
                 rect_hypothesis = Rect(hypothesis)
                 overlap = rect_groundtruth.overlap(rect_hypothesis)
-                
+                # print("overlap",rect_groundtruth.overlap(rect_hypothesis))
                 if overlap >= self.overlap_threshold_:
 #                        print "Fill Hungarian", rect_groundtruth, rect_hypothesis, overlap
                     munkres_matrix[i][j] = 1 / overlap
@@ -206,6 +222,7 @@ class MOTEvaluation:
         
         # Do the Munkres
         LOG.debug(munkres_matrix)
+        print("munkres_matrix",munkres_matrix)
         
         # Only run munkres on non-empty matrix
         if len(munkres_matrix) > 0:
@@ -215,7 +232,7 @@ class MOTEvaluation:
             LOG.info("No need to run Hungarian with %d ground truths and %d hypothesis." % (len(groundtruths), len(hypotheses)))
             indices = []
         LOG.info(indices)
-        
+        print("indices",indices)
         correspondencelist = []
         mismatcheslist = []
         
@@ -228,6 +245,7 @@ class MOTEvaluation:
             
             gt_id   = groundtruths[gt_index]["id"]
             hypo_id = hypotheses[hypo_index]["id"]
+            print("gtid ",gt_id,hypo_id)
             
             # Assert no known mappings have been added to hungarian, since keep correspondence should have considered this case.
             if gt_id in self.mappings_:
@@ -354,6 +372,8 @@ class MOTEvaluation:
                 self.misses_ += 1
 
         # Count false positives
+        # for x in correspondences:
+        print("x",correspondences)
         for hypothesis in hypotheses:
             if hypothesis["id"] not in correspondences.values():
                 LOG.info("False positive: %s" % hypothesis["id"])
@@ -412,7 +432,9 @@ class MOTEvaluation:
 
     def getMOTA(self):
         mota = 0.0
+        print("2nd  total ground truth " , self.total_groundtruths_)
         if self.total_groundtruths_ == 0:
+            print("in if stat of getMOTA")
             write_stderr_red("Warning", "No ground truth. MOTA calculation not possible")
 #            raise("No ground truth. MOTA calculation not possible")
         else:
@@ -423,6 +445,7 @@ class MOTEvaluation:
 
     def getMOTP(self):
         motp = 0.0
+        print("self.total_correspondences_ ",self.total_correspondences_ )
         if self.total_correspondences_ == 0:
             write_stderr_red("Warning", "No correspondences found. MOTP calculation not possible")
 #            raise("No correspondence found. MOTP calculation not possible")
@@ -432,9 +455,34 @@ class MOTEvaluation:
 
 
     def getAbsoluteStatistics(self):
+        print("-------- in absolute stats ------")
         lonely_ground_truths = self.groundtruth_ids_ - set(self.gt_map_.keys())
         covered_ground_truths = self.groundtruth_ids_ & set(self.gt_map_.keys())
         lonely_hypotheses = self.hypothesis_ids_ - set(self.hypo_map_.keys())
+        
+        #-- added
+        stats_dict = {
+        "ground truths": self.total_groundtruths_,
+        "false positives": self.false_positives_,
+        "misses": self.misses_,
+        "mismatches": self.mismatches_,
+        "recoverable mismatches": self.recoverable_mismatches_,
+        "non-recoverable mismatches": self.non_recoverable_mismatches_,
+        "correspondences": self.total_correspondences_,
+        "total overlap": self.total_overlap_,
+        "lonely ground truth tracks": len(lonely_ground_truths),
+        "covered ground truth tracks": len(covered_ground_truths),
+        "lonely hypothesis tracks": len(lonely_hypotheses),
+        "ground truth tracks": len(self.groundtruth_ids_),
+        "hypothesis tracks": len(self.hypothesis_ids_),
+        "covering hypothesis tracks": len(self.hypo_map_.keys())
+                }
+
+        # Print all the values before returning
+        for key, value in stats_dict.items():
+            print(key, ":", value)
+        
+        #-- added
 
         return {
             "ground truths":   self.total_groundtruths_,
@@ -455,10 +503,33 @@ class MOTEvaluation:
     
 
     def getRelativeStatistics(self):
+        print("---- in get relative stat -------")
         gt = self.total_groundtruths_
         covered_ground_truths = self.groundtruth_ids_ & set(self.gt_map_.keys())
         lonely_hypotheses = self.hypothesis_ids_ - set(self.hypo_map_.keys())
-
+        
+        
+        #-- added
+            # Calculate statistics and store them in a dictionary
+        stats_dict = {
+        "MOTA": self.getMOTA(),
+        "MOTP": self.getMOTP(),
+        "miss rate": float(self.misses_) / gt,
+        "false positive rate": float(self.false_positives_) / gt,
+        "mismatch rate": float(self.mismatches_) / gt,
+        "recoverable mismatch rate": float(self.recoverable_mismatches_) / gt,
+        "non-recoverable mismatch rate": float(self.non_recoverable_mismatches_) / gt,
+        "track precision": float(len(self.hypo_map_.keys())) / len(self.hypothesis_ids_) if len(self.hypothesis_ids_) != 0 else 0.0,
+        "track recall": float(len(self.gt_map_.keys())) / len(self.groundtruth_ids_) if len(self.groundtruth_ids_) != 0 else 0.0,
+        }
+    
+    # Print all the calculated values before returning
+        for key, value in stats_dict.items():
+            print(key, ":", value)
+        
+        
+        # -- added
+        
         return {
             "MOTA":                 self.getMOTA(),
             "MOTP":                 self.getMOTP(),
@@ -511,14 +582,17 @@ class MOTEvaluation:
     def convertIDsToString(self):
         for f in self.groundtruth_["frames"]:
             for g in f["annotations"]:
+                #print("gt individual frame convert to string"  , g)
                 g["id"] = str(g.get("id", '__missing_id__'))
 
         for f in self.hypotheses_["frames"]:
             for h in f["hypotheses"]:
+                #print("hypo individual frame convert to string" , h)
                 h["id"] = str(h["id"])
 
 
     def getVisualDebug(self):
+        print("in visual debug")
         fileitem = {
             'filename': self.groundtruth_["filename"],
             'class':    self.groundtruth_["class"],
@@ -528,6 +602,7 @@ class MOTEvaluation:
 
 
     def resetMapping(self):
+        print("in reset mapping")
         """Reset mapping. Useful for loading new ground truth and hypo and not counting shot-boundary caused mismatches."""
         self.mappings_ = {} # Mappings from ground truth id to hypothesis id, as described in paper: M_t (initial M_0 empty)
 
@@ -537,6 +612,8 @@ class MOTEvaluation:
 
 
     def resetStatistics(self):
+        
+        print("in reset stats")
         """Reset counters and mapping."""
         self.resetMapping()
 
@@ -557,7 +634,7 @@ class MOTEvaluation:
 
 
 if __name__ == "__main__":
-
+    print("in main")
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', '--groundtruth', required=True)
     parser.add_argument('-b', '--hypothesis', required=True)
@@ -571,7 +648,9 @@ if __name__ == "__main__":
     gt = open(args.groundtruth) # gt file
     if args.groundtruth.endswith(".json"):
         groundtruth = json.load(gt)[0]
+        print("gt[0] from gt file" , groundtruth)
     else:
+        print("else in main")
         groundtruth = MOT_groundtruth_import(gt.readlines())
     gt.close()
 
@@ -579,6 +658,7 @@ if __name__ == "__main__":
     hypo = open(args.hypothesis) # hypo file
     if args.hypothesis.endswith(".json"):
         hypotheses = json.load(hypo)[0]
+        print("hypo[0] from hypo file" ,hypotheses )
     else:
         hypotheses = MOT_hypo_import(hypo.readlines())
     hypo.close()
@@ -610,3 +690,4 @@ if __name__ == "__main__":
     if(args.visual_debug_file):
         with open(args.visual_debug_file, 'w') as fp:
             json.dump(evaluator.getVisualDebug(), fp, indent=4)
+

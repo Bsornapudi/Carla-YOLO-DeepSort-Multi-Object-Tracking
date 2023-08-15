@@ -3284,8 +3284,8 @@
                     },
                     {
                         "dco": true,
-                        "height": -20000,
-                        "width": -20000,
+                        "height":  20000,
+                        "width":  20000,
                         "id": "vehicle",
                         "y": 10000,
                         "x": 10000
@@ -3331,8 +3331,8 @@
                     },
                     {
                         "dco": true,
-                        "height": -20000,
-                        "width": -20000,
+                        "height":  20000,
+                        "width":  20000,
                         "id": "vehicle",
                         "y": 10000,
                         "x": 10000
@@ -3386,8 +3386,8 @@
                     },
                     {
                         "dco": true,
-                        "height": -20000,
-                        "width": -20000,
+                        "height":  20000,
+                        "width":  20000,
                         "id": "vehicle",
                         "y": 10000,
                         "x": 10000
@@ -9828,8 +9828,8 @@
                 "annotations": [
                     {
                         "dco": true,
-                        "height": -20000,
-                        "width": -20000,
+                        "height":  20000,
+                        "width":  20000,
                         "id": "vehicle",
                         "y": 10000,
                         "x": 10000
@@ -9875,8 +9875,8 @@
                 "annotations": [
                     {
                         "dco": true,
-                        "height": -20000,
-                        "width": -20000,
+                        "height":  20000,
+                        "width":  20000,
                         "id": "vehicle",
                         "y": 10000,
                         "x": 10000
@@ -9922,8 +9922,8 @@
                 "annotations": [
                     {
                         "dco": true,
-                        "height": -20000,
-                        "width": -20000,
+                        "height":  20000,
+                        "width":  20000,
                         "id": "vehicle",
                         "y": 10000,
                         "x": 10000
@@ -9969,8 +9969,8 @@
                 "annotations": [
                     {
                         "dco": true,
-                        "height": -20000,
-                        "width": -20000,
+                        "height":  20000,
+                        "width":  20000,
                         "id": "vehicle",
                         "y": 10000,
                         "x": 10000
