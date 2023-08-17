@@ -1,7 +1,7 @@
 <annotation>
     <folder>output</folder>
-    <filename>001906.png</filename>
-    <path>D:\project_self_driving_vehicle\gitcarla\Carla-YOLO-DeepSort-Multi-Object-Tracking\output\001906.png</path>
+    <filename>009501.png</filename>
+    <path>D:\project_self_driving_vehicle\gitcarla\Carla-YOLO-DeepSort-Multi-Object-Tracking\output\009501.png</path>
     <source>
         <database>Unknown</database>
     </source>
@@ -13,47 +13,47 @@
     <segmented>0</segmented>
     <object>
         <name>vehicle</name>
-        <pose>405.99630482632904</pose>
+        <pose>413.39936903383233</pose>
         <truncated>0</truncated>
         <difficult>0</difficult>
         <bndbox>
-            <xmin>272.7678735591471</xmin>
-            <ymin>469.994481788994</ymin>
-            <xmax>388.89370515519084</xmax>
-            <ymax>522.2551140058506</ymax>
+            <xmin>1416.0395807437599</xmin>
+            <ymin>861.3132048589805</ymin>
+            <xmax>377.0738598976927</xmax>
+            <ymax>975.5056419644304</ymax>
         </bndbox>
     </object>    <object>
         <name>vehicle</name>
-        <pose>482.06271806656764</pose>
+        <pose>403.86441603194965</pose>
         <truncated>0</truncated>
         <difficult>0</difficult>
         <bndbox>
-            <xmin>272.7678735591471</xmin>
-            <ymin>294.8530017571584</ymin>
-            <xmax>378.94037654514585</xmax>
-            <ymax>450.25988518945337</ymax>
+            <xmin>1416.0395807437599</xmin>
+            <ymin>694.7240930976773</ymin>
+            <xmax>388.8077805060362</xmax>
+            <ymax>753.2526132745114</ymax>
         </bndbox>
     </object>    <object>
         <name>vehicle</name>
-        <pose>526.9354049173814</pose>
+        <pose>417.36892901280606</pose>
         <truncated>0</truncated>
         <difficult>0</difficult>
         <bndbox>
-            <xmin>272.7678735591471</xmin>
-            <ymin>614.4692220078636</ymin>
-            <xmax>399.37802297956114</xmax>
-            <ymax>827.5117623761469</ymax>
+            <xmin>1416.0395807437599</xmin>
+            <ymin>0</ymin>
+            <xmax>391.09284344022655</xmax>
+            <ymax>86.12634283270675</ymax>
         </bndbox>
     </object>    <object>
         <name>vehicle</name>
-        <pose>565.7068903704732</pose>
+        <pose>417.81758608979845</pose>
         <truncated>0</truncated>
         <difficult>0</difficult>
         <bndbox>
-            <xmin>272.7678735591471</xmin>
-            <ymin>425.5258549159224</ymin>
-            <xmax>397.9948283535016</xmax>
-            <ymax>601.0406511158858</ymax>
+            <xmin>1416.0395807437599</xmin>
+            <ymin>862.2619273450882</ymin>
+            <xmax>391.28638441581074</xmax>
+            <ymax>972.0106496718244</ymax>
         </bndbox>
     </object>
 </annotation>

@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 import logging
 
-from .model import Net
+from deep_sort.deep.model import Net
 
 
 class Extractor(object):
@@ -23,24 +23,18 @@ class Extractor(object):
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
         ])
 
-    def _preprocess(self, im_crops):
-        """
-        TODO:
-            1. to float with scale from 0 to 1
-            2. resize to (64, 128) as Market1501 dataset did
-            3. concatenate to a numpy array
-            3. to torch Tensor
-            4. normalize
-        """
-        def _resize(im, size):
-            return cv2.resize(im.astype(np.float32)/255., size)
+    def preprocessing(self, img_crop):
+        
+        def img_resize(im, size):
+            resize = cv2.resize(im.astype(np.float32)/255., size)
+            return resize
 
-        im_batch = torch.cat([self.norm(_resize(im, self.size)).unsqueeze(
-            0) for im in im_crops], dim=0).float()
+        im_batch = torch.cat([self.norm(img_resize(im, self.size)).unsqueeze(
+            0) for im in img_crop], dim=0).float()
         return im_batch
 
-    def __call__(self, im_crops):
-        im_batch = self._preprocess(im_crops)
+    def __call__(self, img_crop):
+        im_batch = self.preprocessing(img_crop)
         with torch.no_grad():
             im_batch = im_batch.to(self.device)
             features = self.net(im_batch)
