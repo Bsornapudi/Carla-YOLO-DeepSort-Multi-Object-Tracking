@@ -89,7 +89,7 @@ class main:
         transform = carla.Transform(ego_vehicle.get_transform().transform(carla.Location(x=-4, z=2.5)), carla.Rotation(yaw=-180, pitch=-90))
         spectator.set_transform(transform)
 
-        for i in range(90):
+        for i in range(60):
             vehicle_bp = random.choice(world.get_blueprint_library().filter('vehicle'))
             npc = world.try_spawn_actor(vehicle_bp, random.choice(spawn_points))
             
@@ -124,11 +124,9 @@ class main:
 
         try:
             while True:
-                print('in while loop')
                 frame = camera_data['image']
                 frame , bbox_xyxy , conf_score , cls_id = self.yolo_details(frame)              
                 outputs = self.deepsort.update(bbox_xyxy, conf_score, frame)
-                print('deepsort output', outputs)
 
                 frame = np.array(frame)
                 if len(outputs) > 0:
@@ -138,7 +136,7 @@ class main:
                 frame = cv2.UMat(frame)
                 cv2.imshow('deepSORT', frame)
                 v_frame.append(frame)
-                self.video(v_frame , self.output_path  , 20.0 , img_w , img_h)
+                self.video(v_frame , self.output_path  , 14.0 , img_w , img_h)
                    
                 if cv2.waitKey(1) == ord('q'):
                     break 
