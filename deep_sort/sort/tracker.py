@@ -22,19 +22,6 @@ class Tracker:
         track state is set to `Deleted` if a miss occurs within the first
         `n_init` frames.
 
-    Attributes
-    ----------
-    metric : nn_matching.NearestNeighborMatching
-        The distance metric used for measurement to track association.
-    max_age : int
-        Maximum number of missed misses before a track is deleted.
-    n_init : int
-        Number of frames that a track remains in initialization phase.
-    kf : kalman_filter.KalmanFilter
-        A Kalman filter to filter target trajectories in image space.
-    tracks : List[Track]
-        The list of active tracks at the current time step.
-
     """
 
     def __init__(self, metric, max_iou_distance=0.7, max_age=70, n_init=3):

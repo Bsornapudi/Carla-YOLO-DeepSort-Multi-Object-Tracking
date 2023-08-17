@@ -6,12 +6,6 @@ class NearestNeighborMatching(object):
     This call has methods that perform nearest neighbour distance between 
     targets features and samples features.
  
-    Attributes
-    ----------
-    samples : Dict[int -> List[ndarray]]
-        A dictionary that maps from target identities to the list of samples
-        that have been observed so far.
-
     """
 
     def __init__(self, metric, matching_threshold, budget=None):

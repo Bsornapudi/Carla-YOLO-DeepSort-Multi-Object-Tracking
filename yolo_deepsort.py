@@ -89,7 +89,7 @@ class main:
         transform = carla.Transform(ego_vehicle.get_transform().transform(carla.Location(x=-4, z=2.5)), carla.Rotation(yaw=-180, pitch=-90))
         spectator.set_transform(transform)
 
-        for i in range(90):
+        for i in range(40):
             vehicle_bp = random.choice(world.get_blueprint_library().filter('vehicle'))
             npc = world.try_spawn_actor(vehicle_bp, random.choice(spawn_points))
             

@@ -94,7 +94,7 @@ def get_groundtruth(world , camera , vehicle , image , K, K_b):
                                 cv2.line(img, (int(x_min),int(y_min)), (int(x_min),int(y_max)), (0,0,255, 255), 1)
                                 cv2.line(img, (int(x_max),int(y_min)), (int(x_max),int(y_max)), (0,0,255, 255), 1)
                         gt_writer.addObject('vehicle' ,timestamp_sec , x_min, y_min, x_max, y_max)    
-                        gt_annotations.append({  "dco": True,
+                        ground_truth_annotations.append({  "dco": True,
                                                   "height": y_max - y_min,
                                                     "width": x_max - x_min,
                                                       "id": "vehicle",  
@@ -105,7 +105,7 @@ def get_groundtruth(world , camera , vehicle , image , K, K_b):
                                 "timestamp": timestamp_sec,
                                 "num": image.frame,
                                 "class": "frame",
-                                "annotations": gt_annotations
+                                "annotations": ground_truth_annotations
                         })
                 
         gt_output = {

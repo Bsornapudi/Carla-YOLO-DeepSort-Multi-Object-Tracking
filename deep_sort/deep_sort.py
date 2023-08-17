@@ -10,6 +10,7 @@ from deep_sort.sort.tracker import Tracker
 __all__ = ['DeepSort']
 
 class DeepSort(object):
+    
     def __init__(
         self, 
         model_path, 
